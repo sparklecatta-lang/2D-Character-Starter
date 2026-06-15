@@ -1,0 +1,4 @@
+interface:
+  display_name: "2D Character Starter"
+  short_description: "2D character starter workflows."
+  default_prompt: "Use $2dcs / $2DCS s, ct, p, sq, or cs for 2D character starter workflows."

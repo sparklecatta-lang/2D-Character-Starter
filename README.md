@@ -1,22 +1,245 @@
 # 2D Character Starter
 
-Codex skill for generating and editing 2D playable character assets with explicit modes.
+`2D Character Starter` 是一个给 Codex 使用的 2D 可游玩角色图像生成/修正 skill。它的目标不是做最终序列帧，而是快速得到适合继续测试、筛选和迭代的角色起始素材：简化线条、转目标画风、套用姿势、生成单帧动作、生成绿幕待机角色等。
 
-## Usage
-
-Reference the skill as `$2DCS` or `$2dcs`, then choose a mode:
+推荐引用方式：
 
 ```text
-$2DCS s      one image -> light/medium/heavy simplification
-$2DCS ct     two images -> image 1 character + image 2 target style
-$2DCS p      two or more images -> image 1 appearance + each later image as a strict pose reference
-$2DCS sq     one isolated character -> walk/run/jump/attack/dash single frames
-$2DCS cs     one concept -> 4:3 green-screen idle character at low/medium/high complexity
-$2DCS h      show usage
+$2DCS
 ```
 
-All image-producing modes output 4:3 images on a plain chroma green screen background.
+如果你的 Codex 环境对 skill 名称大小写严格，也可以用：
 
-## Install
+```text
+$2dcs
+```
 
-Copy this repository folder into your Codex skills directory as `2dcs`, or install it with your usual Codex skill installation workflow.
+所有产图模式默认输出：
+
+- 4:3 画幅
+- 纯绿幕背景
+- 单角色优先
+- 不在图片里写文字标签
+- 输出图片按文件名和回复顺序排序
+
+## 安装
+
+把这个仓库放到 Codex 的 skills 目录，并保持目录名为 `2dcs`：
+
+```text
+~/.codex/skills/2dcs
+```
+
+Windows 上通常是：
+
+```text
+C:\Users\<你的用户名>\.codex\skills\2dcs
+```
+
+目录结构应类似：
+
+```text
+2dcs/
+  SKILL.md
+  agents/
+    openai.yaml
+```
+
+安装后，在 Codex 中引用 `$2DCS` 或 `$2dcs` 即可使用。
+
+## 模式总览
+
+这个 skill 必须显式输入模式。只引用 skill 但不写模式时，agent 应提醒你选择模式，而不是直接开始生成。
+
+```text
+$2DCS s      一张图 -> 轻度/中度/重度三档简化
+$2DCS ct     两张图 -> 图1角色设定 + 图2目标画风
+$2DCS p      两张或更多图 -> 图1外观 + 后续每张图作为独立姿势参考
+$2DCS sq     一张单角色图 -> 走/跑/跳/攻击/dash 五张单帧
+$2DCS cs     一张设定图 -> 4:3绿幕右朝向待机角色，三档复杂度
+$2DCS h      查看用法
+```
+
+模式大小写不敏感，例如 `$2DCS P` 也可以。
+
+## s：三档简化
+
+输入一张 2D 角色图，输出三张独立图片：
+
+```text
+$2DCS s
+```
+
+输出：
+
+- `01_s_light.png`：轻度简化
+- `02_s_medium.png`：中度简化
+- `03_s_heavy.png`：重度简化
+
+这个模式会尽量保留角色身份、姿势、比例、配色、主要服装逻辑和武器道具，同时逐级减少：
+
+- 线条噪声
+- 细碎内部线
+- 破碎外轮廓
+- 过多褶皱和装饰
+- 复杂阴影形状
+
+重度简化不是简单锐化或本地减色，也不应该把阴影完全抹掉。它会尽量保留能表达体积和姿势的少量自阴影。
+
+## ct：概念图转目标画风
+
+输入两张图：
+
+```text
+$2DCS ct
+```
+
+图片顺序：
+
+1. 角色概念图或角色设定图
+2. 目标画风参考图
+
+输出：
+
+- `01_ct_concept_target.png`
+
+这个模式会尽量保留图 1 的角色身份、脸型、发型、服装结构、武器概念、配色关系和大轮廓，同时套用图 2 的绘制方式、完成度、边缘处理、阴影风格、材质表现和整体角色图质感。
+
+注意：背景不会沿用图 2。所有输出仍然是 4:3 绿幕背景。
+
+## p：严格姿势迁移
+
+输入两张或更多图：
+
+```text
+$2DCS p
+```
+
+图片顺序：
+
+1. 图 1：锁定外观参考
+2. 图 2 及之后：每张都是一个独立姿势参考
+
+如果只给两张图，会输出一张：
+
+- `01_p_refined_pose.png`
+
+如果给三张图，会把图 2 和图 3 分别作为姿势参考，输出两张：
+
+- `01_p_pose01_refined.png`
+- `02_p_pose02_refined.png`
+
+这个模式会严格区分两类信息：
+
+- 图 1 控制外观：角色身份、脸、头发、体型、服装设计、服装轮廓、武器设计、配色、材质和渲染风格
+- 姿势图控制姿势：头朝向、躯干倾斜、肩胯角度、四肢关节、手脚位置、武器握持角度、重心、落脚点、画面位置和相机角度
+
+它会尽量避免图 1 的原姿势把结果“拉回去”。如果图 1 的衣服形状和姿势参考冲突，会优先遵循姿势参考的身体和四肢位置，再把图 1 的服装包到这个姿势上。
+
+这个模式适合：
+
+- 已经确认 idle 造型，想看同一造型套用 walk / run / attack 姿势
+- 把一张满意的角色设计摆成另一张骨架图的姿势
+- 同一个角色一次套多张姿势参考
+
+它不适合直接生成可无缝播放的序列帧，因为 image gen 通常无法保证像素级对齐。
+
+## sq：生成五种单帧动作
+
+输入一张孤立单角色图：
+
+```text
+$2DCS sq
+```
+
+输出五张独立单帧：
+
+- `01_sq_walk.png`
+- `02_sq_run.png`
+- `03_sq_jump.png`
+- `04_sq_attack.png`
+- `05_sq_dash.png`
+
+这个模式不会做 sprite sheet、时间轴、连环动作图或多姿势拼图。每张图都是一个可单独查看的动作姿势，用来快速探索角色动作方向。
+
+如果原图有武器，会在攻击或 dash 中尽量保留武器概念；如果原图没有武器，攻击会变成徒手攻击、踢击、爪击、施法动作或符合角色设定的身体动作。
+
+## cs：设定图生成三档复杂度待机角色
+
+输入一张角色设定图或角色概念图：
+
+```text
+$2DCS cs
+```
+
+也兼容旧写法：
+
+```text
+$2DCS c s
+```
+
+输出：
+
+- `01_cs_low_complexity.png`：低复杂度
+- `02_cs_medium_complexity.png`：中复杂度
+- `03_cs_high_complexity.png`：高复杂度
+
+三张图都会是：
+
+- 4:3
+- 绿幕背景
+- 单角色
+- 右朝向
+- 站立待机
+- 尽量保持相似比例和构图
+
+复杂度不是“概念图精细度”，而是偏向游戏资产可用性的视觉复杂度。当前定义里，高复杂度也仍然是简化后的 playable asset，不追求厚重概念图细节。
+
+## 数字后缀：多 subagent 独立采样
+
+除 `h/help` 外，产图模式可以加数字后缀：
+
+```text
+$2DCS s 5
+$2DCS ct 5
+$2DCS p 5
+$2DCS sq 5
+$2DCS cs 5
+```
+
+含义是：让多个 subagent 用同样输入和同样模式独立跑多次，得到更多可选结果。
+
+注意：
+
+- 数字不是强度
+- 数字不是 seed
+- 数字不是复杂度等级
+- 数字不是动作帧数量
+- `$2DCS h 5` 仍然只显示帮助，不启动 subagent
+
+## 输出与命名
+
+skill 要求输出图片直接在回复里显示，而不是只给文件列表。
+
+多图输出会按语义顺序命名，例如：
+
+```text
+01_s_light.png
+02_s_medium.png
+03_s_heavy.png
+```
+
+部分 UI 可能会把图片磁贴显示成乱序，所以以文件名和回复里的图片顺序为准。
+
+## 注意事项
+
+- 不写模式时，agent 应提醒选择模式，不应直接生成。
+- 所有产图模式都默认 4:3 绿幕背景。
+- 不要期待 `p` 或 `sq` 直接生成像素级对齐的动画序列。
+- `p` 适合做“同一角色套姿势”的探索图。
+- `sq` 适合快速得到动作方向，不是最终动画帧生产线。
+- `s` 的三档简化必须是独立生成/编辑，不应靠本地减色、海报化、边缘滤镜伪造。
+
+## License
+
+尚未指定许可证。

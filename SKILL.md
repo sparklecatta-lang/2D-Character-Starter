@@ -171,7 +171,7 @@ Sequence Mode output:
 - Save them with these exact filenames and display them in this exact semantic order: `01_sq_walk.png`, `02_sq_run.png`, `03_sq_jump.png`, `04_sq_attack.png`, and `05_sq_dash.png`.
 - Make all five outputs 3:2 aspect ratio with a plain chroma green screen background.
 - Keep all five frames comparable: same character identity, same outfit logic, same palette, same right-facing orientation by default, similar camera angle, similar character scale, and similar canvas placement.
-- If the source image contains a weapon or tool, keep that weapon/tool concept and use it only when it naturally belongs to the action, especially `attack` and optionally `dash`. If the source has no weapon, make `attack` an unarmed strike, claw swipe, kick, magic gesture, or body action consistent with the character.
+- If the source image contains a weapon or tool, keep that weapon/tool concept and use it only when it naturally belongs to the action, especially `attack` and optionally `dash`. If the source has no weapon, make `attack` an unarmed strike, kick, defensive shove, magic gesture, or body action consistent with the character.
 - If the source image is a concept sheet, multi-view sheet, group image, UI screenshot, or image with several characters, stop and ask for one isolated single-character image or an explicit crop. Do not extract a character from a sheet by default in Sequence Mode.
 - Do not add action labels, frame numbers, onion-skin ghosts, extra poses, motion trails, speed lines, impact effects, scenery, ground planes, UI, or cast shadows on the background unless the user explicitly asks.
 
@@ -180,7 +180,7 @@ Use these five action frame definitions:
 1. `walk`: A readable mid-step walking frame. One foot forward, one foot back, mild torso shift, arms or props moving naturally, calm playable-game locomotion.
 2. `run`: A stronger locomotion frame than walk. Longer stride, forward lean, clearer arm swing or prop counterbalance, lifted trailing foot, still a single readable game-frame pose.
 3. `jump`: A single airborne or takeoff frame. Feet off the ground or one foot just leaving, knees bent or extended according to character type, arms/props balanced, silhouette clearly separated from idle.
-4. `attack`: A single attack anticipation or strike frame. Use the character's weapon/tool if present; otherwise use a body, claw, kick, punch, spell, or gesture attack. Keep the pose readable and do not add hit effects or enemies.
+4. `attack`: A single attack anticipation or strike frame. Use the character's weapon/tool if present; otherwise use a body, kick, punch, spell, defensive shove, or gesture attack. Keep the pose readable and do not add hit effects or enemies.
 5. `dash`: A quick burst movement frame. Use low center of mass, forward lean, compressed or stretched silhouette, trailing cloth/hair/limbs, and strong directional intent. Do not turn it into a run duplicate.
 
 Sequence Mode internal instruction:
@@ -196,24 +196,32 @@ Trigger Concept Target Mode only when the user includes standalone `ct`, or stan
 Concept Target Mode expects two images:
 
 1. First image: character concept/source design. Use this for character identity and design.
-2. Second image: target style reference. Use this for rendering style, finish level, and framing tendency. Do not use it for output background color.
+2. Second image: target style reference. Use this for rendering style, finish level, shape language, detail density, proportion language, edge treatment, value grouping, and framing tendency. Do not use it for output background color.
 
 Concept Target Mode output:
 
 - Generate one final character image by default, not three simplification levels.
 - Save the output as `01_ct_concept_target.png` unless a batch/source prefix is needed, then display it directly as a Markdown image.
-- Preserve the first image's character identity, age, gender presentation, face type, hair, costume logic, weapon/tool, palette relationships, and important silhouette.
+- Preserve the first image's character identity anchors: species/body type, face type, age/gender presentation when readable, important hair/head features, costume logic, weapon/tool if present, palette relationships, and the few silhouette features that make the character recognizable.
 - If the first image is a concept sheet with multiple views, use the main/front full-body design as the primary source and ignore text, logos, callouts, weapon-only panels, side/back views, and layout marks unless the user says otherwise.
-- Apply the second image's art direction: rendering finish, line/edge treatment, lighting softness, shadow style, material rendering, detail density, and full-body presentation.
-- Do not copy the second image's pose in Concept Target Mode. Preserve or infer a natural pose from image 1 instead.
+- Treat the first image as identity, not style. Do not preserve the first image's rendering style, line density, anatomy detail, texture, finish level, or exact proportions when they conflict with the target style.
+- Apply the second image's art direction strongly: rendering finish, line/edge treatment, silhouette grammar, lighting softness, shadow style, material simplification, value grouping, detail density, proportion language, and full-body presentation.
+- If the target style is highly simplified, compact, icon-like, silhouette-heavy, proportion-shifted, abstract, dominant-value-shape based, low-detail, or otherwise far from the source style, push the output far enough that it clearly belongs to the target style family. Do not stop at a conservative source-style redraw with thicker outlines.
+- Do not copy the second image's exact pose in Concept Target Mode. Preserve image 1's broad stance/attitude when possible, but adapt pose and proportions into a natural target-style idle/readable game-asset pose when the target style requires a different body scale, compactness, or abstraction level.
 - Output a 3:2 image with a plain chroma green screen background. Do not copy the second image's background color.
-- Do not copy the second image's character identity, face, mask, clothing design, weapon, emblem, pose-specific props, or story details unless the user explicitly asks.
+- Do not copy the second image's character identity, face/head design, distinctive facial coverings, clothing design, weapon/tool, symbols/markings, pose-specific props, or story details unless the user explicitly asks.
 - Keep the result as a clean single-character game asset, full body when possible, centered, with no text, no concept-sheet layout, no labels, no logos, and no side-view panels.
+- Before generation, silently build two separate checklists:
+  1. Source identity anchors from image 1: the minimum features needed for the character to remain recognizable.
+  2. Target style anchors from image 2: shape language, silhouette/value grouping, line density, detail budget, proportion language, material simplification, shadow style, and framing.
+- In the final prompt, name the concrete target style anchors observed in image 2. Use task-specific observations, not canned examples. Do not use generic phrases like `polished rendering style` by themselves.
+- In the final prompt, explicitly forbid the main observed source-style failure modes, such as retaining the source rendering style, source anatomy/proportion language, source detail density, source texture habits, or exact source linework, when those conflict with the target style.
+- If the first result mostly looks like image 1 with superficial target colors, outlines, or background, reject it and regenerate with stronger target-style transfer. This is a CT failure, not an acceptable variant.
 
 Concept Target Mode internal instruction:
 
 ```text
-Use image 1 as the character concept source and image 2 as the target style reference. Redraw the main character from image 1 as a single full-body 2D playable game character in the rendering style of image 2. Preserve image 1's identity, long hair, face type, outfit structure, armor/costume motifs, weapon concept, dark palette, and fantasy swordsman role. Apply image 2's polished isolated game-character rendering, lighting, shadow handling, material finish, edge treatment, and framing tendency. Output a 3:2 image on a plain chroma green screen background. Do not copy image 2's background color, character, mask, red sword, ragged cloak design, pose-specific details, or identity. No text, no logos, no callout lines, no concept-sheet layout, no extra views.
+Use image 1 only as the source character identity/design reference and image 2 only as the target style reference. First extract the minimum source identity anchors that must survive: species/body type, face/head features, readable age/gender presentation if relevant, key costume logic, weapon/tool if present, palette relationships, and the most important macro silhouette cues. Then extract concrete target style anchors from image 2: shape language, silhouette/value grouping, line density, detail budget, proportion language, material simplification, shadow style, edge treatment, finish level, and framing tendency. Redraw the image 1 character as one full-body 2D playable game character that clearly belongs to image 2's style family. Let image 2 control rendering style, simplification level, proportions, line/detail density, value grouping, and finish. Let image 1 control identity only. If the target style is compact, icon-like, dominant-value-shape based, flat, low-detail, or highly abstract, compress and simplify the source design accordingly instead of preserving the source's original anatomy/proportion language or detailed rendering. Do not copy image 2's character identity, face/head design, distinctive facial coverings, clothing design, weapon/tool, symbols/markings, exact pose, story details, or background color. Output a 3:2 image on a plain chroma green screen background. No text, no logos, no callout lines, no concept-sheet layout, no extra views.
 ```
 
 Do not preserve the second image's background color in Concept Target Mode; always use the global 3:2 chroma green output rule.
@@ -244,12 +252,12 @@ Pose Mode output:
 - Do not let image 1's original pose pull the result back toward the source pose. Image 1 controls all appearance; the current pose reference controls pose geometry only.
 - Treat each pose reference independently. Do not blend multiple pose references, average them, combine limbs from different pose images, or use one pose reference to correct another.
 - When the user gives extra limb, hand, or weapon-grip constraints, treat them as local constraints layered onto each current pose reference's locked pose. Keep the current pose reference's head direction, torso tilt, shoulder/hip angle, leg stride, foot anchors, center of mass, camera angle, and canvas placement unchanged. Adjust only the minimum wrist, fingers, hand occupancy, and prop contact needed to satisfy the user constraint.
-- If the user specifies which hand holds or does not hold a weapon, build an internal hand-occupancy map before generation, for example: right hand holds sword; left hand empty at chest. Include both the positive occupancy and the forbidden grip/contact in the prompt.
+- If the user specifies which hand holds or does not hold a weapon/tool, build an internal hand-occupancy map before generation, using only the user's specified hands, objects, and contact points, for example: `[specified hand] holds [specified weapon/tool]; [specified hand] is [specified empty/contact state]`. Include both the positive occupancy and the forbidden grip/contact in the prompt.
 - Even when the user gives no extra hand instruction, treat hand pose as validation-critical. Build a hand map from the current pose reference for every visible hand: wrist location, palm direction, finger curl or open-hand state, occlusion order, grip/contact point, and whether the hand is empty or touching the prop.
 - Do not copy any pose reference's character identity, face, hair shape, clothing design, clothing silhouette, cloth shapes, color palette, weapon design, line style, detail density, shadow style, background color, or rendering style.
 - Preserve the pose reference's relative canvas layout within the 3:2 output: if the skeleton/pose figure is off-center, low/high in frame, or occupies a specific portion of the canvas, place the source character similarly after adapting to 3:2.
 - If the source and current pose weapons differ, keep the first image's weapon design but align it to the current pose reference's hand/arm gesture and prop axis when possible. Never preserve the pose reference weapon's blade profile, markings, material, palette, ornament, or rendering style. If the current pose reference has no weapon but image 1 does, keep image 1's weapon in a pose-compatible hold or carry position without inventing the pose reference's weapon.
-- If preserving image 1's clothing shape conflicts with the current pose reference's body pose, prioritize the current pose reference's body/limb placement and wrap image 1's costume design around that pose. Do not import the pose reference's clothing silhouette, cape/cloth shapes, hair shape, or simplified design language.
+- If preserving image 1's clothing shape conflicts with the current pose reference's body pose, prioritize the current pose reference's body/limb placement and wrap image 1's costume design around that pose. Do not import the pose reference's clothing silhouette, loose-cloth/accessory shapes, hair shape, or simplified design language.
 - Do not solve a hand/weapon constraint by changing the running direction, converting the pose into a standing pose, moving the feet, straightening the torso, changing the stride, changing the camera angle, or re-centering the character differently from the current pose reference.
 - Keep the result as a clean single-character game asset, full body when possible, centered, with no text, no labels, no logos, and no extra views.
 
@@ -257,14 +265,14 @@ Pose Mode refined generation standard:
 
 1. Carefully interpret each pose reference before generating that pose's result. Internally read the pose as if making a neutral control sheet: facing direction, camera angle, bounding box, ground/contact anchors, center of mass, head/chin/nose direction, neck, spine curve, torso lean, shoulder line, hip line, each shoulder/elbow/wrist/palm/finger group, each hip/knee/ankle/heel/toe anchor, weapon/prop axis and contact points, motion direction for hair/cloth, occlusion order, and relative canvas placement. Do not read costume, hair, weapon, palette, line style, detail density, or rendering style from the pose reference.
 2. Convert that interpretation into one strict image-space pose-control prompt for that pose reference. Treat the current pose reference's body pose, hand pose, foot anchors, prop axis/contact, body geometry envelope, center of mass, and motion direction as higher priority than image 1's original stance or comfortable default anatomy. Do not treat the pose reference's costume silhouette, hair shape, cloth shapes, weapon design, line style, or detail density as priority pose data.
-3. Wrap image 1's identity and costume around the interpreted pose. Preserve image 1's face, hair design, body proportions, outfit structure, costume silhouette, palette, weapon/tool design, and rendering finish, but bend clothing panels, armor plates, hair masses, cape/cloth masses, sleeves, belts, and props to follow the current pose reference's geometry layout without tracing the pose reference's clothing, hair, or weapon shapes.
+3. Wrap image 1's identity and costume around the interpreted pose. Preserve image 1's face/head design, body proportions, outfit structure, costume silhouette, palette, weapon/tool design, and rendering finish, but bend costume panels, body coverings, loose cloth, accessories, and props to follow the current pose reference's geometry layout without tracing the pose reference's clothing, hair/head shape, or weapon/tool shapes.
 4. Generate one polished result at the strongest practical lock level for each pose reference. Do not output intermediate `outline lock`, `pose layout lock`, `pixel align lock`, or candidate files.
 5. Do not generate multiple candidates and choose one internally. Only regenerate when the visible result plainly violates hard constraints such as pose drift, copied identity, broken hands, or wrong background.
 
 Pose Mode internal instruction:
 
 ```text
-Use image 1 as the locked appearance reference and every image after image 1 as an independent strict neutralized pose skeleton/control reference. For each pose reference, first reduce it to neutral geometry control data: facing direction, camera angle, bounding box, ground/contact anchors, center of mass, head/chin/nose direction, neck, spine curve, torso lean, shoulder and hip angles, every visible elbow/wrist/palm/finger group, every visible knee/ankle/heel/toe anchor, hand occupancy, weapon/prop axis and contact points, motion direction for hair/cloth, occlusion order, and relative canvas placement. Ignore the pose reference's character identity, face, hair shape, costume design, costume silhouette, cloth shapes, weapon design, palette, line style, shadow style, detail density, material finish, rendering style, and background color. Generate one refined 3:2 output for each pose reference on a plain chroma green screen background, in the same order as the pose reference images. Redraw the character from image 1 with image 1's identity, face, hair, body proportions, costume design, costume silhouette, weapon/tool design, palette, material finish, and rendering style preserved. Apply the current pose reference's interpreted geometry as strictly as possible: match joint layout, hands, feet, prop axis/contact, camera angle, orientation, relative character scale, character position within the canvas, ground/contact anchor, center of mass, and framing, adapted into a 3:2 output canvas. Wrap image 1's costume, hair, cloth, armor, and weapon design around the current pose geometry instead of letting image 1's original pose influence the result. Do not copy any pose reference's character identity, clothing design, clothing silhouette, hair shape, weapon design, color palette, line style, detail density, rendering style, background color, or non-3:2 canvas aspect ratio. Do not blend or average multiple pose references. No text, no logos, no labels, no extra views.
+Use image 1 as the locked appearance reference and every image after image 1 as an independent strict neutralized pose skeleton/control reference. For each pose reference, first reduce it to neutral geometry control data: facing direction, camera angle, bounding box, ground/contact anchors, center of mass, head/chin/nose direction, neck, spine curve, torso lean, shoulder and hip angles, every visible elbow/wrist/palm/finger group, every visible knee/ankle/heel/toe anchor, hand occupancy, weapon/prop axis and contact points, motion direction for hair/cloth, occlusion order, and relative canvas placement. Ignore the pose reference's character identity, face, hair shape, costume design, costume silhouette, cloth shapes, weapon design, palette, line style, shadow style, detail density, material finish, rendering style, and background color. Generate one refined 3:2 output for each pose reference on a plain chroma green screen background, in the same order as the pose reference images. Redraw the character from image 1 with image 1's identity, face/head design, body proportions, costume design, costume silhouette, weapon/tool design, palette, material finish, and rendering style preserved. Apply the current pose reference's interpreted geometry as strictly as possible: match joint layout, hands, feet, prop axis/contact, camera angle, orientation, relative character scale, character position within the canvas, ground/contact anchor, center of mass, and framing, adapted into a 3:2 output canvas. Wrap image 1's costume, body coverings, loose cloth, accessories, and weapon/tool design around the current pose geometry instead of letting image 1's original pose influence the result. Do not copy any pose reference's character identity, clothing design, clothing silhouette, hair/head shape, weapon/tool design, color palette, line style, detail density, rendering style, background color, or non-3:2 canvas aspect ratio. Do not blend or average multiple pose references. No text, no logos, no labels, no extra views.
 ```
 
 Before calling image generation in Pose Mode, silently create one appearance-anchor checklist from image 1 and one separate neutral pose-control checklist for each pose reference after image 1. The pose-control checklist has priority over image 1's original stance only for geometry; the appearance-anchor checklist has priority for every non-geometry detail. The hand-occupancy map may only change hands, wrists, fingers, and weapon contact when the user explicitly overrides a hand/weapon detail.
@@ -290,7 +298,7 @@ Use this workflow for Simplification Mode. For `ct`, use Concept Target Mode ins
 Use these three levels by default:
 
 1. `轻度`: Clean up line noise while keeping most recognizable costume shapes, important secondary details, and most readable self-shadow masses. Remove sketchy strokes, texture noise, tiny random marks, and overly dense folds.
-2. `中度`: Balanced game-asset simplification. Merge hair, clothing, armor, props, outer edge details, and shadow areas into larger readable shapes. Keep only the interior lines, contour breaks, and shadow blocks needed to explain pose, costume boundaries, volume, and gameplay identity.
+2. `中度`: Balanced game-asset simplification. Merge hair/head masses, clothing/body-covering shapes, constructed costume pieces, props, outer edge details, and shadow areas into larger readable shapes. Keep only the interior lines, contour breaks, and shadow blocks needed to explain pose, costume boundaries, volume, and gameplay identity.
 3. `重度`: Maximum simplification while still recognizable. Use a bold redesigned silhouette, very few interior lines, broad flat color blocks, minimal props/detail marks, icon-like sprite readability, and one simple visible cel-shadow tone. Do not make this level completely shadowless by default.
 
 ## Outer Contour Simplification
@@ -298,11 +306,11 @@ Use these three levels by default:
 Treat outer-contour simplification as a separate requirement from line cleanup.
 
 - Preserve the character's macro silhouette: head size, body proportions, pose, main weapon/tool, and major clothing volume.
-- Redesign the micro silhouette: do not trace every notch, tear, hair strand, strap tip, cloth point, armor chip, or broken edge from the reference.
+- Redesign the micro silhouette: do not trace every notch, tear, hair strand, strap tip, cloth point, material chip, or broken edge from the reference.
 - For `轻度`, remove tiny edge noise and merge small torn points while keeping the overall tattered feeling.
 - For `中度`, reduce ragged hems, broken sleeves, hair spikes, and cloth edges into a few larger readable chunks. A torn hem should become roughly 3 to 5 broad points instead of many small teeth.
 - For `重度`, convert ragged or shredded edges into a simple readable contour with only 1 to 2 large tears or asymmetries if they are important to the character. Avoid sawtooth hems, fringe, shredded strips, and many dangling scraps.
-- If the source character is 衣衫褴褛, keep the story cue of worn clothing but simplify the edge language aggressively across levels.
+- If worn, torn, damaged, or irregular materials are an identity cue in the source, preserve that story cue while simplifying the edge language aggressively across levels.
 
 ## Shadow Simplification
 
@@ -396,7 +404,7 @@ no sprite sheet, no contact sheet, no animation timeline, no multi-frame collage
 - Simplify outer contours as strongly as interior details. Small silhouette noise is detail, not identity.
 - Simplify hair into larger clumps. Avoid many thin strands.
 - Simplify clothing into broad panels. Remove most folds, stitches, seams, buckles, tiny ornaments, shredded strips, and small jagged edge points unless they define the character.
-- Simplify armor into a few major plates. Avoid many panel lines, scratches, rivets, and engraved patterns.
+- Simplify hard-surface, layered, or constructed costume elements into a few major readable pieces. Avoid many panel lines, scratches, rivets, engravings, and small construction marks.
 - Use one clean outer contour and only the interior lines needed to explain anatomy, clothing boundaries, or props.
 - Prefer flat colors plus controlled simple cel shading. Keep at least one readable self-shadow tone unless the user explicitly asks for totally flat colors.
 - Keep the background a single flat chroma green screen color on a 3:2 canvas. Do not add ground shadows, scenery, props, UI, text, effects, or decorative shapes.
@@ -441,23 +449,23 @@ Use this section only when the user explicitly asks for a prompt instead of an i
 
 For Concept Target Mode prompt-only requests, output one `概念目标画风提示词` instead of three simplification prompts. For Pose Mode prompt-only requests, output one `精细姿势迁移提示词` per pose reference after image 1, labeled `pose01`, `pose02`, and so on when multiple pose references are provided. Each prompt must focus on carefully interpreting that pose reference before generating one final image. For Sequence Mode prompt-only requests, output five prompts labeled `walk`, `run`, `jump`, `attack`, and `dash`. For Concept Simplify Mode prompt-only requests, output three prompts labeled `低复杂度`, `中复杂度`, and `高复杂度`. In normal use, do not show this prompt-only format; generate the image directly.
 
-## Example
+## Generic Prompt Assembly Example
 
 Input:
 
 ```text
 $2DCS s
-A highly detailed fox swordsman, many cloth folds, ornate armor, fantasy forest background, colorful, playable character.
+[one detailed single-character source image or source prompt]
 ```
 
 Output:
 
 ```text
-Generate three 2D playable game character variants from the reference/prompt: light simplification, medium simplification, and strong simplification. 3:2 aspect ratio, full body, centered, three-quarter view, fox swordsman with a short cape, chest armor, belt, boots, and one curved sword. Keep identity, pose, palette, lighting direction, and framing consistent across all three. Use clean simplified linework, simplified outer contour, bold readable macro silhouette, fewer interior detail lines and fewer edge notches at each stronger level, larger flat orange, cream, steel, and blue color shapes, controlled simple cel shading, visible self-shadow masses in all three variants, one simple shadow tone in the strong variant, animation-ready sprite design, on a plain chroma green screen background, no scenery, no text labels inside the images.
+Generate three 2D playable game character variants from the reference/prompt: light simplification, medium simplification, and strong simplification. 3:2 aspect ratio, full body when possible, centered, [source view angle], [source character identity and role], [source pose], [key outfit/body-covering/accessory/prop anchors]. Keep [source identity anchors], pose, palette relationships, lighting direction, and framing consistent across all three. Use clean simplified linework, simplified outer contour, bold readable macro silhouette, fewer interior detail lines and fewer edge notches at each stronger level, large flat color shapes based on the source palette, controlled simple cel shading, visible self-shadow masses in all three variants, one simple shadow tone in the strong variant, animation-ready sprite design, on a plain chroma green screen background, no scenery, no text labels inside the images.
 ```
 
 Negative:
 
 ```text
-no dense linework, no sketchy strokes, no cross-hatching, no tiny fabric folds, no excessive seams, no ornate armor engraving, no fur strand detail, no exact traced silhouette, no tiny jagged edge nicks, no shredded fringe, no many torn cloth points, no shadowless flat cutout, no missing self-shadows, no gradients, no airbrush shading, no painterly texture, no forest background, no text, no watermark, no cropped body
+no dense linework, no sketchy strokes, no cross-hatching, no tiny source-specific detail noise, no excessive seams or construction marks, no exact traced silhouette, no tiny jagged edge nicks, no over-complex edge fragments, no shadowless flat cutout, no missing self-shadows, no gradients, no airbrush shading, no painterly texture, no inherited source background, no text, no watermark, no cropped body
 ```

@@ -1,13 +1,13 @@
 ---
 name: 2dcs
-description: "Generate/edit 2D playable game character images after an explicit no-hyphen mode. All outputs use 4:3 chroma green screen. Modes: s/simplify = three simplification levels; ct/concept target = image1 character + image2 target style; p/pose = image1 appearance + skeleton-only pose refs, output one refined strict pose-transfer image per pose reference; cs/concept simplify = one concept to right-facing green-screen idle at low/medium/high complexity; sq/sequence = one single-character image to walk/run/jump/attack/dash single frames; h/help = usage only. cs is canonical without a space, but c s is accepted as the same mode. Any image-producing mode except h/help accepts a numeric suffix for independent subagent samples. If no mode, ask for s, ct, p, cs, sq, or h. Triggers include simplify lines, simplify silhouette, concept target mode, concept simplify mode, style reference, pose reference, green screen playable character, animation frames, standing idle character, 设定图转画风, 姿势迁移, 简化线稿, 绿幕背景, 可游玩角色."
+description: "Generate/edit 2D playable game character images after an explicit no-hyphen mode. All outputs use 3:2 chroma green screen. Modes: s/simplify = three simplification levels; ct/concept target = image1 character + image2 target style; p/pose = image1 appearance + skeleton-only pose refs, output one refined strict pose-transfer image per pose reference; cs/concept simplify = one concept to right-facing green-screen idle at low/medium/high complexity; sq/sequence = one single-character image to walk/run/jump/attack/dash single frames; h/help = usage only. cs is canonical without a space, but c s is accepted as the same mode. Any image-producing mode except h/help accepts a numeric suffix for independent subagent samples. If no mode, ask for s, ct, p, cs, sq, or h. Triggers include simplify lines, simplify silhouette, concept target mode, concept simplify mode, style reference, pose reference, green screen playable character, animation frames, standing idle character, 设定图转画风, 姿势迁移, 简化线稿, 绿幕背景, 可游玩角色."
 ---
 
 # 2D Character Starter
 
 ## Purpose
 
-Use this skill only after the user provides an explicit no-hyphen mode. Mode matching is case-insensitive. `s` / `simplify` produces three simplified-linework 2D playable character images from one reference image. `ct` / `concept target` produces one concept-to-target-style transfer from two reference images. `p` / `pose` uses image 1 as the locked appearance reference and every remaining image as a separate strict skeleton-only pose reference, producing one refined pose-transfer image per pose reference. `cs` / `concept simplify` produces three 4:3 chroma-green, right-facing standing-idle playable character images from one character concept at low/medium/high visual complexity. `cs` is the canonical spelling, but `c s` is accepted as the same mode. `sq` / `sequence` produces five 4:3 chroma-green single action frames from one isolated single-character image: walk, run, jump, attack, and dash. Any image-producing mode except `h` / `help` may take a numeric suffix for independent subagent samples. `h` / `help` shows usage and never processes images. All image-producing modes output 4:3 images on a plain chroma green screen background. Treat prompt rewriting as an internal step for image generation unless the user explicitly asks for prompt text only.
+Use this skill only after the user provides an explicit no-hyphen mode. Mode matching is case-insensitive. `s` / `simplify` produces three simplified-linework 2D playable character images from one reference image. `ct` / `concept target` produces one concept-to-target-style transfer from two reference images. `p` / `pose` uses image 1 as the locked appearance reference and every remaining image as a separate strict skeleton-only pose reference, producing one refined pose-transfer image per pose reference. `cs` / `concept simplify` produces three 3:2 chroma-green, right-facing standing-idle playable character images from one character concept at low/medium/high visual complexity. `cs` is the canonical spelling, but `c s` is accepted as the same mode. `sq` / `sequence` produces five 3:2 chroma-green single action frames from one isolated single-character image: walk, run, jump, attack, and dash. Any image-producing mode except `h` / `help` may take a numeric suffix for independent subagent samples. `h` / `help` shows usage and never processes images. All image-producing modes output 3:2 images on a plain chroma green screen background. Treat prompt rewriting as an internal step for image generation unless the user explicitly asks for prompt text only.
 
 The goal is not to remove character identity; it is to preserve the readable macro silhouette, pose, costume, colors, gameplay role, and visible self-shading while reducing line noise, tiny internal details, noisy outer-contour fragments, and overly complex shadow shapes. Do not preserve the reference edge contour exactly.
 
@@ -34,15 +34,15 @@ The goal is not to remove character identity; it is to preserve the readable mac
 - Natural-language intent such as `简化`, `三档简化`, `概念`, `设定图转画风`, `姿势`, `姿势迁移`, `序列`, `动作帧`, `绿幕`, or `待机` is not enough by itself. Treat it as missing mode unless it also includes standalone `s`, `simplify`, `ct`, standalone `concept` plus standalone `target`, `p`, `pose`, `sq`, `sequence`, `cs`, standalone `c` plus standalone `s`, standalone `concept` plus standalone `simplify`, `h`, or `help`.
 - Use this reminder when mode is missing: `请选择模式：s 简化三档，ct 概念图转目标画风，p 图1外形+图2及后续姿势，cs 设定图生成绿幕待机三档复杂度，sq 单角色图生成走/跑/跳/攻击/dash 单帧，或 h 查看用法。`
 - Use this reminder when modes conflict: `检测到不兼容模式。请选择：s 简化三档，ct 概念图转目标画风，p 姿势迁移，cs 生成绿幕待机三档复杂度，或 sq 单角色动作单帧序列。输入 h 查看用法。`
-- All image-producing modes must output a 4:3 image with a plain chroma green screen background. Do not preserve, inherit, or copy background colors from source or reference images.
+- All image-producing modes must output a 3:2 image with a plain chroma green screen background. Do not preserve, inherit, or copy background colors from source or reference images.
 - In Pose Mode, treat image 1 as the locked appearance reference and each image after image 1 as a separate strict neutralized pose skeleton/control reference. Pose references provide geometry only, never appearance, style, costume, hair, weapon, palette, or rendering cues.
 - In Pose Mode, generate one refined final pose-transfer image for each pose reference after image 1. Do not create pose-lock tiers, artistic variants, prompt-direction variants, candidate pools, or AI-side winner selection. If the user explicitly uses a numeric suffix such as `p 5`, each subagent still returns one independent result per pose reference and the coordinator must not pick winners automatically.
 - In Simplification Mode, if the user provides an image and invokes this skill, directly generate/edit three output images using the best available image generation tool.
 - In Simplification Mode, generate three clearly different simplification levels: `轻度`, `中度`, and `重度`.
-- Keep the same character identity, pose, 4:3 framing, macro silhouette, and chroma green background across all three outputs so the user can compare simplification level directly.
+- Keep the same character identity, pose, 3:2 framing, macro silhouette, and chroma green background across all three outputs so the user can compare simplification level directly.
 - Make the outer contour visibly simpler from `轻度` to `重度`; do not only clean up line clarity.
 - Keep visible character self-shadows in all three outputs by default. Simplify shadow shapes across levels, but do not let `重度` become completely shadowless unless the user explicitly asks for a flat icon.
-- Use a plain chroma green screen background on a 4:3 canvas.
+- Use a plain chroma green screen background on a 3:2 canvas.
 - If the image tool can reliably bind each returned output to its intended semantic level, request all three levels in one batch and then save them with the required filenames. If display or return order is unreliable, run sequential image generations/edits from the same reference image in semantic order.
 - Do not create `中度` or `重度` by locally posterizing, quantizing, reducing colors, thresholding, vectorizing, edge-filtering, or otherwise processing a previously generated `轻度` image. Each level must be generated/edited from the original reference image and its own level-specific prompt.
 - Do not stop after returning a rewritten prompt unless the user explicitly asks for prompts only.
@@ -51,7 +51,7 @@ The goal is not to remove character identity; it is to preserve the readable mac
 - In Simplification Mode, keep the final reply short: display the three generated images directly in numeric order with Markdown image embeds, without standalone links or file lists.
 - Do not place text labels inside the generated images.
 - In Concept Simplify Mode, generate three clearly different complexity levels: `低复杂度`, `中复杂度`, and `高复杂度`.
-- In Concept Simplify Mode, keep all outputs 4:3, chroma green background, right-facing, standing idle, and comparable in framing.
+- In Concept Simplify Mode, keep all outputs 3:2, chroma green background, right-facing, standing idle, and comparable in framing.
 - In Concept Simplify Mode, keep the final reply short: display the three generated images directly in numeric order with Markdown image embeds, without standalone links or file lists.
 - In Sequence Mode, require one isolated single-character image as the source. Generate five independent single-frame action images: `walk`, `run`, `jump`, `attack`, and `dash`. Do not create an animation sheet, timeline, contact sheet, or multi-frame collage.
 
@@ -92,7 +92,7 @@ $2DCS s      一张图 -> 轻度/中度/重度三档简化
 $2DCS ct     两张图 -> 图1角色设定 + 图2目标画风
 $2DCS p      两张或更多图 -> 图1角色设定 + 后续每张不同姿势，每个姿势输出一张精细姿势迁移
 $2DCS sq     一张单角色图 -> 走路/跑步/跳跃/攻击/dash 五张单帧
-$2DCS cs     一张设定图 -> 4:3绿幕右朝向待机三档复杂度
+$2DCS cs     一张设定图 -> 3:2绿幕右朝向待机三档复杂度
 $2DCS h      查看用法
 
 数字后缀适用于除 h/help 以外的所有产图模式：
@@ -103,7 +103,7 @@ $2DCS sq 5   打开 5 个 subagent，各自执行同样的 sq 模式
 $2DCS cs 5   打开 5 个 subagent，各自执行同样的 cs 模式
 $2DCS h 5    仍然只显示帮助，不启动 subagent
 
-所有输出默认 4:3 绿幕背景。模式大小写不敏感，S/CT/P/SQ/CS/H 也可以。cs 推荐连写，写成 c s 也可以。
+所有输出默认 3:2 绿幕背景。模式大小写不敏感，S/CT/P/SQ/CS/H 也可以。cs 推荐连写，写成 c s 也可以。
 ```
 
 ## Simplification Mode
@@ -120,7 +120,7 @@ Simplification Mode output:
 - Save them with these exact filenames and display them in this exact semantic order: `01_s_light.png` (`轻度`), `02_s_medium.png` (`中度`), `03_s_heavy.png` (`重度`).
 - Preserve the source character identity, pose, proportions, palette, major costume logic, weapon/tool, and macro silhouette.
 - Simplify linework, outer contour, detail density, and shadow complexity progressively across the three levels.
-- Make all three outputs 4:3 aspect ratio with a plain chroma green screen background.
+- Make all three outputs 3:2 aspect ratio with a plain chroma green screen background.
 - Do not derive `中度` or `重度` from another generated level through local filters.
 
 ## Concept Simplify Mode
@@ -135,7 +135,7 @@ Concept Simplify Mode output:
 
 - Generate three independent output images labeled `低复杂度`, `中复杂度`, and `高复杂度`.
 - Save them with these exact filenames and display them in this exact semantic order: `01_cs_low_complexity.png` (`低复杂度`), `02_cs_medium_complexity.png` (`中复杂度`), `03_cs_high_complexity.png` (`高复杂度`).
-- Make all three outputs 4:3 aspect ratio with a plain chroma green screen background.
+- Make all three outputs 3:2 aspect ratio with a plain chroma green screen background.
 - Redraw the character as a single 2D playable game character, full body when possible, facing right, in a standing idle state.
 - Preserve the source character identity, age/gender presentation, face type, hair, costume logic, weapon/tool concept, palette relationships, role, and important macro silhouette.
 - If the source is a concept sheet with multiple views, use the main/front full-body design as the primary source. Use side/back views only to clarify costume structure. Ignore text, logos, callouts, weapon-only panels, and layout marks unless the user says otherwise.
@@ -154,7 +154,7 @@ Use these three complexity levels:
 Concept Simplify Mode internal instruction:
 
 ```text
-Use the source character concept as the identity and design reference. Generate three independent 4:3 images of the same single 2D playable game character on a plain chroma green screen background: ultra-minimal low complexity, minimal medium complexity, and simple high complexity. In all three, redraw the character full-body when possible, facing right, standing idle, feet planted, neutral ready posture, centered, with consistent framing. Preserve the character's identity, face type, hair, costume logic, palette relationships, weapon/tool concept, role, and important macro silhouette. Vary only visual complexity: low is extremely reduced with 3 to 5 big color regions and almost no interior lines; medium is still minimal with large merged costume panels and 1 to 2 broad shadow masses; high equals the previous low-complexity target with clean contour, few interior lines, simple flat colors, and one simple cel-shadow tone. Do not create rich concept-art detail in any level. No action pose, no walking/running, no extra views, no text, no labels, no logos, no scenery, no concept-sheet layout.
+Use the source character concept as the identity and design reference. Generate three independent 3:2 images of the same single 2D playable game character on a plain chroma green screen background: ultra-minimal low complexity, minimal medium complexity, and simple high complexity. In all three, redraw the character full-body when possible, facing right, standing idle, feet planted, neutral ready posture, centered, with consistent framing. Preserve the character's identity, face type, hair, costume logic, palette relationships, weapon/tool concept, role, and important macro silhouette. Vary only visual complexity: low is extremely reduced with 3 to 5 big color regions and almost no interior lines; medium is still minimal with large merged costume panels and 1 to 2 broad shadow masses; high equals the previous low-complexity target with clean contour, few interior lines, simple flat colors, and one simple cel-shadow tone. Do not create rich concept-art detail in any level. No action pose, no walking/running, no extra views, no text, no labels, no logos, no scenery, no concept-sheet layout.
 ```
 
 ## Sequence Mode
@@ -169,7 +169,7 @@ Sequence Mode output:
 
 - Generate five independent single-frame action images, not an animation sheet: `walk`, `run`, `jump`, `attack`, and `dash`.
 - Save them with these exact filenames and display them in this exact semantic order: `01_sq_walk.png`, `02_sq_run.png`, `03_sq_jump.png`, `04_sq_attack.png`, and `05_sq_dash.png`.
-- Make all five outputs 4:3 aspect ratio with a plain chroma green screen background.
+- Make all five outputs 3:2 aspect ratio with a plain chroma green screen background.
 - Keep all five frames comparable: same character identity, same outfit logic, same palette, same right-facing orientation by default, similar camera angle, similar character scale, and similar canvas placement.
 - If the source image contains a weapon or tool, keep that weapon/tool concept and use it only when it naturally belongs to the action, especially `attack` and optionally `dash`. If the source has no weapon, make `attack` an unarmed strike, claw swipe, kick, magic gesture, or body action consistent with the character.
 - If the source image is a concept sheet, multi-view sheet, group image, UI screenshot, or image with several characters, stop and ask for one isolated single-character image or an explicit crop. Do not extract a character from a sheet by default in Sequence Mode.
@@ -186,7 +186,7 @@ Use these five action frame definitions:
 Sequence Mode internal instruction:
 
 ```text
-Use the source image as the locked identity and design reference for one single playable game character. Generate five independent 4:3 single-frame action images on a plain chroma green screen background: walk, run, jump, attack, and dash. Preserve the source character's identity, proportions, face/head type, costume design, palette, material finish, weapon/tool concept, and rendering style across all five frames. Make all frames right-facing by default, full body when possible, centered with comparable scale and camera angle. Vary only the action pose. Do not make a sprite sheet, contact sheet, animation timeline, multi-pose collage, or labeled diagram. No text, labels, frame numbers, logos, scenery, ground planes, motion trails, speed lines, impact effects, enemies, extra characters, or extra views.
+Use the source image as the locked identity and design reference for one single playable game character. Generate five independent 3:2 single-frame action images on a plain chroma green screen background: walk, run, jump, attack, and dash. Preserve the source character's identity, proportions, face/head type, costume design, palette, material finish, weapon/tool concept, and rendering style across all five frames. Make all frames right-facing by default, full body when possible, centered with comparable scale and camera angle. Vary only the action pose. Do not make a sprite sheet, contact sheet, animation timeline, multi-pose collage, or labeled diagram. No text, labels, frame numbers, logos, scenery, ground planes, motion trails, speed lines, impact effects, enemies, extra characters, or extra views.
 ```
 
 ## Concept Target Mode
@@ -206,17 +206,17 @@ Concept Target Mode output:
 - If the first image is a concept sheet with multiple views, use the main/front full-body design as the primary source and ignore text, logos, callouts, weapon-only panels, side/back views, and layout marks unless the user says otherwise.
 - Apply the second image's art direction: rendering finish, line/edge treatment, lighting softness, shadow style, material rendering, detail density, and full-body presentation.
 - Do not copy the second image's pose in Concept Target Mode. Preserve or infer a natural pose from image 1 instead.
-- Output a 4:3 image with a plain chroma green screen background. Do not copy the second image's background color.
+- Output a 3:2 image with a plain chroma green screen background. Do not copy the second image's background color.
 - Do not copy the second image's character identity, face, mask, clothing design, weapon, emblem, pose-specific props, or story details unless the user explicitly asks.
 - Keep the result as a clean single-character game asset, full body when possible, centered, with no text, no concept-sheet layout, no labels, no logos, and no side-view panels.
 
 Concept Target Mode internal instruction:
 
 ```text
-Use image 1 as the character concept source and image 2 as the target style reference. Redraw the main character from image 1 as a single full-body 2D playable game character in the rendering style of image 2. Preserve image 1's identity, long hair, face type, outfit structure, armor/costume motifs, weapon concept, dark palette, and fantasy swordsman role. Apply image 2's polished isolated game-character rendering, lighting, shadow handling, material finish, edge treatment, and framing tendency. Output a 4:3 image on a plain chroma green screen background. Do not copy image 2's background color, character, mask, red sword, ragged cloak design, pose-specific details, or identity. No text, no logos, no callout lines, no concept-sheet layout, no extra views.
+Use image 1 as the character concept source and image 2 as the target style reference. Redraw the main character from image 1 as a single full-body 2D playable game character in the rendering style of image 2. Preserve image 1's identity, long hair, face type, outfit structure, armor/costume motifs, weapon concept, dark palette, and fantasy swordsman role. Apply image 2's polished isolated game-character rendering, lighting, shadow handling, material finish, edge treatment, and framing tendency. Output a 3:2 image on a plain chroma green screen background. Do not copy image 2's background color, character, mask, red sword, ragged cloak design, pose-specific details, or identity. No text, no logos, no callout lines, no concept-sheet layout, no extra views.
 ```
 
-Do not preserve the second image's background color in Concept Target Mode; always use the global 4:3 chroma green output rule.
+Do not preserve the second image's background color in Concept Target Mode; always use the global 3:2 chroma green output rule.
 
 ## Pose Mode
 
@@ -225,7 +225,7 @@ Trigger Pose Mode only when the user includes standalone `p` or standalone `pose
 Pose Mode expects two or more images:
 
 1. First image: locked appearance reference. Use this for character identity, face, hair, body proportions, costume design, costume silhouette, palette, materials, weapon/tool design, and rendering style.
-2. Every image after image 1: a separate strict neutralized pose reference. Treat each pose image independently as a skeleton/control diagram, not as an appearance or style reference. Use it only for body pose, gesture, head direction, torso tilt, shoulder/hip angle, arm and leg joint angles, hand and foot positions, prop holding angle/axis, camera angle, orientation, relative character scale, character position within the canvas, ground/contact anchor, center of mass, and framing. Adapt each pose layout into its own required 4:3 output canvas.
+2. Every image after image 1: a separate strict neutralized pose reference. Treat each pose image independently as a skeleton/control diagram, not as an appearance or style reference. Use it only for body pose, gesture, head direction, torso tilt, shoulder/hip angle, arm and leg joint angles, hand and foot positions, prop holding angle/axis, camera angle, orientation, relative character scale, character position within the canvas, ground/contact anchor, center of mass, and framing. Adapt each pose layout into its own required 3:2 output canvas.
 
 Pose reference neutralization:
 
@@ -240,14 +240,14 @@ Pose Mode output:
 - If there is only one pose reference, save the output as `01_p_refined_pose.png` unless a batch/source prefix is needed, then display it directly as a Markdown image.
 - If there are multiple pose references, save the outputs in pose-reference order as `01_p_pose01_refined.png`, `02_p_pose02_refined.png`, `03_p_pose03_refined.png`, and so on unless a batch/source prefix is needed, then display them directly as Markdown images in the same order.
 - Strictly preserve the first image's appearance: character identity, face, hair, body proportions, costume design, costume silhouette, weapon/tool design, palette, material finish, and rendering style.
-- Strictly apply the current pose reference image's neutralized pose geometry: match head direction, torso tilt, shoulder/hip angle, arm and leg joint angles, hand and foot placement, prop/weapon holding angle, camera angle, orientation, relative character scale, character position within the canvas, ground/contact anchor, center of mass, and framing. Adapt these geometry cues into the required 4:3 canvas.
+- Strictly apply the current pose reference image's neutralized pose geometry: match head direction, torso tilt, shoulder/hip angle, arm and leg joint angles, hand and foot placement, prop/weapon holding angle, camera angle, orientation, relative character scale, character position within the canvas, ground/contact anchor, center of mass, and framing. Adapt these geometry cues into the required 3:2 canvas.
 - Do not let image 1's original pose pull the result back toward the source pose. Image 1 controls all appearance; the current pose reference controls pose geometry only.
 - Treat each pose reference independently. Do not blend multiple pose references, average them, combine limbs from different pose images, or use one pose reference to correct another.
 - When the user gives extra limb, hand, or weapon-grip constraints, treat them as local constraints layered onto each current pose reference's locked pose. Keep the current pose reference's head direction, torso tilt, shoulder/hip angle, leg stride, foot anchors, center of mass, camera angle, and canvas placement unchanged. Adjust only the minimum wrist, fingers, hand occupancy, and prop contact needed to satisfy the user constraint.
 - If the user specifies which hand holds or does not hold a weapon, build an internal hand-occupancy map before generation, for example: right hand holds sword; left hand empty at chest. Include both the positive occupancy and the forbidden grip/contact in the prompt.
 - Even when the user gives no extra hand instruction, treat hand pose as validation-critical. Build a hand map from the current pose reference for every visible hand: wrist location, palm direction, finger curl or open-hand state, occlusion order, grip/contact point, and whether the hand is empty or touching the prop.
 - Do not copy any pose reference's character identity, face, hair shape, clothing design, clothing silhouette, cloth shapes, color palette, weapon design, line style, detail density, shadow style, background color, or rendering style.
-- Preserve the pose reference's relative canvas layout within the 4:3 output: if the skeleton/pose figure is off-center, low/high in frame, or occupies a specific portion of the canvas, place the source character similarly after adapting to 4:3.
+- Preserve the pose reference's relative canvas layout within the 3:2 output: if the skeleton/pose figure is off-center, low/high in frame, or occupies a specific portion of the canvas, place the source character similarly after adapting to 3:2.
 - If the source and current pose weapons differ, keep the first image's weapon design but align it to the current pose reference's hand/arm gesture and prop axis when possible. Never preserve the pose reference weapon's blade profile, markings, material, palette, ornament, or rendering style. If the current pose reference has no weapon but image 1 does, keep image 1's weapon in a pose-compatible hold or carry position without inventing the pose reference's weapon.
 - If preserving image 1's clothing shape conflicts with the current pose reference's body pose, prioritize the current pose reference's body/limb placement and wrap image 1's costume design around that pose. Do not import the pose reference's clothing silhouette, cape/cloth shapes, hair shape, or simplified design language.
 - Do not solve a hand/weapon constraint by changing the running direction, converting the pose into a standing pose, moving the feet, straightening the torso, changing the stride, changing the camera angle, or re-centering the character differently from the current pose reference.
@@ -264,7 +264,7 @@ Pose Mode refined generation standard:
 Pose Mode internal instruction:
 
 ```text
-Use image 1 as the locked appearance reference and every image after image 1 as an independent strict neutralized pose skeleton/control reference. For each pose reference, first reduce it to neutral geometry control data: facing direction, camera angle, bounding box, ground/contact anchors, center of mass, head/chin/nose direction, neck, spine curve, torso lean, shoulder and hip angles, every visible elbow/wrist/palm/finger group, every visible knee/ankle/heel/toe anchor, hand occupancy, weapon/prop axis and contact points, motion direction for hair/cloth, occlusion order, and relative canvas placement. Ignore the pose reference's character identity, face, hair shape, costume design, costume silhouette, cloth shapes, weapon design, palette, line style, shadow style, detail density, material finish, rendering style, and background color. Generate one refined 4:3 output for each pose reference on a plain chroma green screen background, in the same order as the pose reference images. Redraw the character from image 1 with image 1's identity, face, hair, body proportions, costume design, costume silhouette, weapon/tool design, palette, material finish, and rendering style preserved. Apply the current pose reference's interpreted geometry as strictly as possible: match joint layout, hands, feet, prop axis/contact, camera angle, orientation, relative character scale, character position within the canvas, ground/contact anchor, center of mass, and framing, adapted into a 4:3 output canvas. Wrap image 1's costume, hair, cloth, armor, and weapon design around the current pose geometry instead of letting image 1's original pose influence the result. Do not copy any pose reference's character identity, clothing design, clothing silhouette, hair shape, weapon design, color palette, line style, detail density, rendering style, background color, or non-4:3 canvas aspect ratio. Do not blend or average multiple pose references. No text, no logos, no labels, no extra views.
+Use image 1 as the locked appearance reference and every image after image 1 as an independent strict neutralized pose skeleton/control reference. For each pose reference, first reduce it to neutral geometry control data: facing direction, camera angle, bounding box, ground/contact anchors, center of mass, head/chin/nose direction, neck, spine curve, torso lean, shoulder and hip angles, every visible elbow/wrist/palm/finger group, every visible knee/ankle/heel/toe anchor, hand occupancy, weapon/prop axis and contact points, motion direction for hair/cloth, occlusion order, and relative canvas placement. Ignore the pose reference's character identity, face, hair shape, costume design, costume silhouette, cloth shapes, weapon design, palette, line style, shadow style, detail density, material finish, rendering style, and background color. Generate one refined 3:2 output for each pose reference on a plain chroma green screen background, in the same order as the pose reference images. Redraw the character from image 1 with image 1's identity, face, hair, body proportions, costume design, costume silhouette, weapon/tool design, palette, material finish, and rendering style preserved. Apply the current pose reference's interpreted geometry as strictly as possible: match joint layout, hands, feet, prop axis/contact, camera angle, orientation, relative character scale, character position within the canvas, ground/contact anchor, center of mass, and framing, adapted into a 3:2 output canvas. Wrap image 1's costume, hair, cloth, armor, and weapon design around the current pose geometry instead of letting image 1's original pose influence the result. Do not copy any pose reference's character identity, clothing design, clothing silhouette, hair shape, weapon design, color palette, line style, detail density, rendering style, background color, or non-3:2 canvas aspect ratio. Do not blend or average multiple pose references. No text, no logos, no labels, no extra views.
 ```
 
 Before calling image generation in Pose Mode, silently create one appearance-anchor checklist from image 1 and one separate neutral pose-control checklist for each pose reference after image 1. The pose-control checklist has priority over image 1's original stance only for geometry; the appearance-anchor checklist has priority for every non-geometry detail. The hand-occupancy map may only change hands, wrists, fingers, and weapon contact when the user explicitly overrides a hand/weapon detail.
@@ -276,7 +276,7 @@ After generation, reject or regenerate a specific output if that output has pose
 Use this workflow for Simplification Mode. For `ct`, use Concept Target Mode instead. For `p`, use Pose Mode instead. For `cs` or `c s`, use Concept Simplify Mode instead. For `sq`, use Sequence Mode instead. If no mode is present, do not use any workflow.
 
 1. Inspect the user's source material: prompt text, attached image, or both.
-2. Extract only the essential character facts: role/species, body proportions, pose, camera angle, major silhouette masses, key costume pieces, key props, palette, visible lighting direction, and self-shadow style. Keep the output constraint fixed: 4:3 canvas with plain chroma green screen background.
+2. Extract only the essential character facts: role/species, body proportions, pose, camera angle, major silhouette masses, key costume pieces, key props, palette, visible lighting direction, and self-shadow style. Keep the output constraint fixed: 3:2 canvas with plain chroma green screen background.
 3. Build three internal positive prompts, one for each simplification level, including linework simplification, outer-contour simplification, and shadow simplification.
 4. Build an internal negative prompt that blocks dense rendering habits such as hatching, tiny seams, ornate folds, sketchiness, painterly texture, realistic surface detail, tiny edge fragments, shadowless flat cutouts, and background clutter.
 5. Call the available image generation/editing workflow with the source image and the three internal prompts.
@@ -318,11 +318,11 @@ Treat shadow simplification as a separate requirement from flat color simplifica
 
 ## Output Canvas And Background
 
-- Use a 4:3 aspect ratio in every image-producing mode.
+- Use a 3:2 aspect ratio in every image-producing mode.
 - Use one plain chroma green screen background in every image-producing mode.
 - Do not preserve, inherit, sample, or copy source/reference background colors.
 - Do not add scenery, gradients, decorative shapes, ground planes, UI, text, or cast shadows on the background.
-- In Pose Mode, preserve each pose reference's relative character scale, position, ground/contact anchor, and framing for that pose's output, but adapt each into the required 4:3 canvas instead of copying a non-4:3 canvas.
+- In Pose Mode, preserve each pose reference's relative character scale, position, ground/contact anchor, and framing for that pose's output, but adapt each into the required 3:2 canvas instead of copying a non-3:2 canvas.
 
 ## No Local Simplification Substitutes
 
@@ -346,7 +346,7 @@ If the available image generation backend cannot produce three independent level
 Prefer this structure:
 
 ```text
-2D playable game character, full body, centered, 4:3 aspect ratio, plain chroma green screen background, [front/three-quarter/side view], [character identity and role], [pose], [key outfit/props], [simplification level instruction], clean simplified linework, simplified outer contour, macro silhouette preserved but micro edge contour redesigned, do not trace every small edge notch, few confident contour lines, minimal interior lines, large flat color shapes, controlled simple cel shading, visible self-shadow masses, [shadow level instruction], animation-ready sprite design, crisp readable shape language, no scenery
+2D playable game character, full body, centered, 3:2 aspect ratio, plain chroma green screen background, [front/three-quarter/side view], [character identity and role], [pose], [key outfit/props], [simplification level instruction], clean simplified linework, simplified outer contour, macro silhouette preserved but micro edge contour redesigned, do not trace every small edge notch, few confident contour lines, minimal interior lines, large flat color shapes, controlled simple cel shading, visible self-shadow masses, [shadow level instruction], animation-ready sprite design, crisp readable shape language, no scenery
 ```
 
 Use several of these phrases when appropriate:
@@ -367,7 +367,7 @@ Use several of these phrases when appropriate:
 - `broad readable shadow shapes`
 - `iconic game sprite shape language`
 - `animation-ready 2D character asset`
-- `4:3 aspect ratio`
+- `3:2 aspect ratio`
 - `plain chroma green screen background`
 
 ## Internal Negative Prompt Recipe
@@ -399,7 +399,7 @@ no sprite sheet, no contact sheet, no animation timeline, no multi-frame collage
 - Simplify armor into a few major plates. Avoid many panel lines, scratches, rivets, and engraved patterns.
 - Use one clean outer contour and only the interior lines needed to explain anatomy, clothing boundaries, or props.
 - Prefer flat colors plus controlled simple cel shading. Keep at least one readable self-shadow tone unless the user explicitly asks for totally flat colors.
-- Keep the background a single flat chroma green screen color on a 4:3 canvas. Do not add ground shadows, scenery, props, UI, text, effects, or decorative shapes.
+- Keep the background a single flat chroma green screen color on a 3:2 canvas. Do not add ground shadows, scenery, props, UI, text, effects, or decorative shapes.
 - Make the asset readable at small game size. If detail would disappear at thumbnail size, remove or merge it.
 
 ## Reference Image Handling
@@ -407,10 +407,10 @@ no sprite sheet, no contact sheet, no animation timeline, no multi-frame collage
 When the user provides a character image, use this as the image-to-image/edit instruction:
 
 ```text
-Use the reference image for character identity, pose, proportions, palette, macro silhouette, and lighting direction. Redraw as three cleaner 2D playable game character asset variants: light simplification, medium simplification, and strong simplification. Keep the same 4:3 framing and character identity in all variants, but do not preserve the exact outer edge contour. Simplify torn clothing edges, ragged hems, hair spikes, straps, small silhouette notches, and shadow complexity more aggressively at each level. Keep visible self-shadows in all three variants: light keeps most main shadow masses, medium merges them into a few clean cel-shaded blocks, strong uses one simple shadow tone with 1 to 3 broad shadow masses. Use a plain chroma green screen background. Remove sketchy strokes, tiny folds, ornate micro details, texture noise, tiny edge fragments, painterly shadow noise, and background elements according to each simplification level. Do not add text labels inside the images.
+Use the reference image for character identity, pose, proportions, palette, macro silhouette, and lighting direction. Redraw as three cleaner 2D playable game character asset variants: light simplification, medium simplification, and strong simplification. Keep the same 3:2 framing and character identity in all variants, but do not preserve the exact outer edge contour. Simplify torn clothing edges, ragged hems, hair spikes, straps, small silhouette notches, and shadow complexity more aggressively at each level. Keep visible self-shadows in all three variants: light keeps most main shadow masses, medium merges them into a few clean cel-shaded blocks, strong uses one simple shadow tone with 1 to 3 broad shadow masses. Use a plain chroma green screen background. Remove sketchy strokes, tiny folds, ornate micro details, texture noise, tiny edge fragments, painterly shadow noise, and background elements according to each simplification level. Do not add text labels inside the images.
 ```
 
-Always redraw the output on a plain chroma green screen background with a 4:3 aspect ratio. Do not preserve the source background color and do not use neutral fallback colors.
+Always redraw the output on a plain chroma green screen background with a 3:2 aspect ratio. Do not preserve the source background color and do not use neutral fallback colors.
 
 ## Prompt-Only Mode
 
@@ -433,7 +433,7 @@ Use this section only when the user explicitly asks for a prompt instead of an i
 [negative prompt]
 
 **画布/背景**
-[4:3, plain chroma green screen background]
+[3:2, plain chroma green screen background]
 
 **保留重点**
 [short list of identity details preserved]
@@ -453,7 +453,7 @@ A highly detailed fox swordsman, many cloth folds, ornate armor, fantasy forest 
 Output:
 
 ```text
-Generate three 2D playable game character variants from the reference/prompt: light simplification, medium simplification, and strong simplification. 4:3 aspect ratio, full body, centered, three-quarter view, fox swordsman with a short cape, chest armor, belt, boots, and one curved sword. Keep identity, pose, palette, lighting direction, and framing consistent across all three. Use clean simplified linework, simplified outer contour, bold readable macro silhouette, fewer interior detail lines and fewer edge notches at each stronger level, larger flat orange, cream, steel, and blue color shapes, controlled simple cel shading, visible self-shadow masses in all three variants, one simple shadow tone in the strong variant, animation-ready sprite design, on a plain chroma green screen background, no scenery, no text labels inside the images.
+Generate three 2D playable game character variants from the reference/prompt: light simplification, medium simplification, and strong simplification. 3:2 aspect ratio, full body, centered, three-quarter view, fox swordsman with a short cape, chest armor, belt, boots, and one curved sword. Keep identity, pose, palette, lighting direction, and framing consistent across all three. Use clean simplified linework, simplified outer contour, bold readable macro silhouette, fewer interior detail lines and fewer edge notches at each stronger level, larger flat orange, cream, steel, and blue color shapes, controlled simple cel shading, visible self-shadow masses in all three variants, one simple shadow tone in the strong variant, animation-ready sprite design, on a plain chroma green screen background, no scenery, no text labels inside the images.
 ```
 
 Negative:

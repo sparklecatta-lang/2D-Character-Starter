@@ -24,28 +24,19 @@ $2dcs
 
 ## 安装
 
-把这个仓库放到 Codex 的 skills 目录，并保持目录名为 `2dcs`：
+最简单的安装方式：在 Codex 里直接对 agent 说：
 
 ```text
-~/.codex/skills/2dcs
+帮我安装这个 skill：https://github.com/sparklecatta-lang/2D-Character-Starter
 ```
 
-Windows 上通常是：
+安装完成后，用 `$2DCS` 或 `$2dcs` 引用即可。
+
+如果你不用 agent 自动安装，也可以手动把这个仓库放到 Codex 的 skills 目录，并保持目录名为 `2dcs`。Windows 上通常是：
 
 ```text
 C:\Users\<你的用户名>\.codex\skills\2dcs
 ```
-
-目录结构应类似：
-
-```text
-2dcs/
-  SKILL.md
-  agents/
-    openai.yaml
-```
-
-安装后，在 Codex 中引用 `$2DCS` 或 `$2dcs` 即可使用。
 
 ## 模式总览
 
